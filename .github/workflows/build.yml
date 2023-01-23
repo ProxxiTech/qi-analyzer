@@ -22,6 +22,16 @@ jobs:
       with:
         name: windows
         path: ${{github.workspace}}/build/Analyzers/Release/*.dll
+    - name: Upload readme
+      uses: actions/upload-artifact@v3
+      with:
+        name: readme
+        path: ${{github.workspace}}/readme.md
+    - name: Qi-HLA
+      uses: actions/upload-artifact@v3
+      with:
+        name: qi-hla
+        path: ${{github.workspace}}/qi-hla/
   macos:
     runs-on: macos-latest
     steps:
@@ -56,10 +66,6 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         path: ${{github.workspace}}/artifacts
-    - name: copy readme and qi-hla
-      run: |
-        cp ${{github.workspace}}/readme.md ${{github.workspace}}/artifacts/
-        cp -r ${{github.workspace}}/qi-hla/ ${{github.workspace}}/artifacts/
     - name: zip
       run: |
         cd ${{github.workspace}}/artifacts
