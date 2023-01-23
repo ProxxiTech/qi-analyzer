@@ -56,6 +56,10 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         path: ${{github.workspace}}/artifacts
+    - name: copy readme and qi-hla
+      run: |
+        cp ${{github.workspace}}/readme.md ${{github.workspace}}/artifacts/
+        cp -r ${{github.workspace}}/qi-hla/ ${{github.workspace}}/artifacts/
     - name: zip
       run: |
         cd ${{github.workspace}}/artifacts

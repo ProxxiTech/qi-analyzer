@@ -1,7 +1,10 @@
-# Saleae Analyzer SDK Sample Analyzer
+# WPC Qi Protocol Analyzers
+## Low- and High-Level Analyzers for Saleae Logic 2
 
-- [Saleae Analyzer SDK Sample Analyzer](#saleae-analyzer-sdk-sample-analyzer)
-  - [Renaming your Analyzer](#renaming-your-analyzer)
+- [Getting Started](#getting-started)
+  - [Setup](#setup)
+  - [Circuit](#circuit)
+- [Development](#development)
   - [Cloud Building & Publishing](#cloud-building---publishing)
   - [Prerequisites](#prerequisites)
     - [Windows](#windows)
@@ -15,38 +18,50 @@
     - [Windows](#windows-2)
     - [MacOS](#macos-2)
     - [Linux](#linux-2)
-  - [Updating an Existing Analyzer to use CMake & GitHub Actions](#updating-an-existing-analyzer-to-use-cmake---github-actions)
 
-The Saleae Analyzer SDK is used to create Low Level Analyzers (LLA) for the Saleae Logic software via a plugin architecture. These plugins are used to decode protocol data from captured waveforms. In many cases you can use a [High Level Analyzer Extension](https://support.saleae.com/extensions/high-level-analyzer-quickstart) to process data from an existing protocol decoder instead of building a LLA.
+The latest version of this analyzer is available on Github: [Qi-Analyzer](https://github.com/ProxxiTech/qi-analyzer).
 
-To build your own protocol decoder plugin, first fork, clone, or download this repository.
+### IMPORTANT
+The Low Level Analyzer generates raw bytes from a channel of Qi protocol data, and must be paired with the [Qi High Level Analyzer](https://github.com/ProxxiTech/qi-analyzer/qi-hla) to decode the actual Qi packets.
 
-Then, make sure you have the required software installed for development. See the [Prerequisites](#Prerequisites) section below for details.
+# Getting Started
 
-## Renaming your Analyzer
+## Setup
 
-Once downloaded, first run the script rename_analyzer.py. This script is used to rename the sample analyzer automatically. Specifically, it changes the class names in the source code, it changes the text name that will be displayed once the custom analyzer has been loaded into the Saleae Logic software, and it updates the visual studio project.
+* Download the binaries for the latest version of Qi-Analyzer from the repository's [Releases](https://github.com/ProxxiTech/qi-analyzer/releases).
+* Extract the downloaded zip file to a directory.
+* In Logic 2, go to Preferences and set the Custom Low Level Analyzers directory to the directory where you extracted the downloaded zip file. See [Importing a Custom Low Level Analyzer](https://support.saleae.com/faq/technical-faq/setting-up-developer-directory) for more information. Note that additional steps may be required for MacOS users, so please follow the directions in the Saleae FAQ.
+* Install the latest version of Qi-HLA from Logic 2 > Extensions > Load Existing Extension... and select `<qi-analyzer>/qi-hla/extension.json` from the unziped download. The HLA is also published on the Saleae extension marketplace as `WPC Qi HLA`, but there's a chance that it won't match the version of the LLA you donwloaded.
+* Build the [circuit](#circuit) from Freescale AN4701.
+* Connect both sides of the Tx coil to the circuits inputs (leave them connected to the Qi circuit though, of course!)
+* Connect the output of the circuit to a channel on your Saleae logic analyzer.
+* In Logic 2, add the `WPC Qi LLA` analyzer to the channel and optionally disable `Show in protocol results table`.
+* Add `WPC Qi HLA` and set its input analyzer as the `WPC Qi LLA` that was added previously. Leave `Show in protocol results table` enabled.
 
-There are two names you need to provide to rename_analyzer. The first is the class name. For instance, if you are developing a SPI analyzer, the class names would be SPIAnalyzer, SPIAnalyzerResults, SPIAnalyzerSettings, etc.
-The file names would be similar, like SPIAnalyzer.cpp, etc.
+### Recommended capture settings
 
-All analyzer classes should end with "Analyzer," so the rename script will add that for you. In the first prompt after starting the script, enter "SPI". The analyzer suffix will be added for you. This needs to be a valid C++ class name - no spaces, it can't start with a number, etc.
+* Sampling rate: 1MS/S
+* Voltage level: 3.3+ Volts
+* Do not use the Glitch filter. The low-level analyzer has glitch filtering built in and the Logic 2's glitch filter will interfere (it's essentially a low-pass filter, which messes up the timing of the edges).
 
-Second, the script will prompt you for the display name. This will appear in the software in the list of analyzers after the plugin has loaded. This string can have spaces, since it will always be treated as a string, and not as the name of a class.
 
-After that, the script will complete the renaming process and exit.
+## Circuit
 
-    python rename_analyzer.py
-    SPI
-    Mark's SPI Analyzer
+The Tx coil voltage must be filtered to extract the Qi communication packets using a circuit such as the one described in [Freescale AN4701](https://www.nxp.com/docs/en/application-note/AN4701.pdf), and the output of that circuit should be used as the input channel to the Qi Analyzer.
 
-Once renamed, you're ready to build your analyzer! See the [Building your Analyzer](#Building-your-Analyzer) section below.
+### Tips for AN4701
 
-API documentation can be found in [docs/Analyzer_API.md](docs/Analyzer_API.md).
+* Don't forget the decoupling caps on the opamps!
+* Change R713 from 18k to 1.5k to increase the peak-to-peak range, which helps a lot with generating valid data.
+* Put a 1M resistor in R722 (normally NC) to add some hysteresis to the comparitor.
+* Have a spacer of 1-2mm between the Tx and Rx coils.
+
+
+# Development
 
 ## Cloud Building & Publishing
 
-This example repository includes support for GitHub actions, which is a continuous integration service from GitHub. The file located at `.github\workflows\build.yml` contains the configuration.
+This repository includes support for GitHub actions, which is a continuous integration service from GitHub. The file located at `.github\workflows\build.yml` contains the configuration.
 
 When building in CI, the release version of the analyzer is built for Windows, Linux, and MacOS. The built analyzer files are available for every CI build. Additionally, GitHub releases are automatically created for any tagged commits, making it easy to share pre-built binaries with others once your analyzer is complete.
 
@@ -60,7 +75,7 @@ Any time you download a binary from the internet on a Mac, wether it be an appli
 
 Because of this, when you download a pre-compiled protocol analyzer plugin from the internet and try to load it in the Saleae software, you will most likely see an error message like this:
 
-> "libSimpleSerialAnalyzer.so" cannot be opened because th developer cannot be verified.
+> "libSimpleSerialAnalyzer.so" cannot be opened because the developer cannot be verified.
 
 Signing and notarizing of open source software can be rare, because it requires an active paid subscription to the MacOS developer program, and the signing and notarization process frequently changes and becomes more restrictive, requiring frequent updates to the build process.
 
@@ -151,7 +166,7 @@ Misc dependencies:
 sudo apt-get install build-essential
 ```
 
-## Building your Analyzer
+## Building the Analyzer
 
 ### Windows
 
@@ -310,19 +325,3 @@ To verify that symbols for your custom analyzer are loading, check the backtrace
 #4  0x00007f26828e1609 in start_thread (arg=<optimized out>) at pthread_create.c:477
 #5  0x00007f2681136293 in clone () at ../sysdeps/unix/sysv/linux/x86_64/clone.S:95
 ```
-
-## Updating an Existing Analyzer to use CMake & GitHub Actions
-
-If you maintain an existing C++ analyzer, or wish to fork and update someone else's analyzer, please follow these steps.
-
-1. Delete the contents of the existing repository, except for the source directory, and the readme.
-2. Copy the contents of this sample repository into the existing analyzer, except for the src and docs directories, or the rename_analyzer.py script. The `.clang-format` file is optional, it would allow you to auto-format your code to our style using [clang-format](https://clang.llvm.org/docs/ClangFormat.html).
-3. Rename the existing source directory to src. This is optional, but it might make future updates from this sample analyzer easier to roll out. Make sure the CMakeLists.txt file reflects your source path.
-4. In the new CMakeLists.txt file, make the following changes:
-
-- In the line `project(SimpleSerialAnalyzer)`, replace `SimpleSerialAnalyzer` with the name of the existing analyzer, for example `project(I2CAnalyzer)`
-- In the section `set(SOURCES`, replace all of the existing source code file names with the file names of the existing source code.
-
-5. Update the readme! Feel free to just reference the SampleAnalyzer repository, or copy over the build instructions.
-6. Try the build instructions to make sure the analyzer still builds, or commit this to GitHub to have GitHub actions build it for you!
-7. Once you're ready to create a release, add a tag to your last commit to trigger GitHub to publish a release.

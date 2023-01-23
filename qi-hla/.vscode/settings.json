@@ -1,0 +1,9 @@
+{
+    "python.formatting.autopep8Args": [
+        "--ignore=E221,E402,E501"
+    ],
+    "python.linting.pycodestyleArgs": [
+        "--ignore=E221,E402,E501"
+    ],
+    "python.linting.pycodestyleEnabled": true
+}
