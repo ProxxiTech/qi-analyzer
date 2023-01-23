@@ -10,7 +10,7 @@ static U64 reverseDataByteBits(U64 data) {
 
     U64 byte = 0;
     for (U32 i = 0; i < bit_count; i++) {
-        U64 lsb_val = (data & (1ui64 << i)) >> i;
+        U64 lsb_val = (data & (1ull << i)) >> i;
         U64 msb_val = lsb_val << ((bit_count - 1) - i);
         byte |= msb_val;
     }
