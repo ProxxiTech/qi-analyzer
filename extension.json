@@ -7,7 +7,7 @@
   "extensions": {
     "WPC Qi HLA": {
       "type": "HighLevelAnalyzer",
-      "entryPoint": "HighLevelAnalyzer.Hla"
+      "entryPoint": "qi-hla/HighLevelAnalyzer.Hla"
     }
   }
 }

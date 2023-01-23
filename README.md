@@ -22,7 +22,9 @@
 The latest version of this analyzer is available on Github: [Qi-Analyzer](https://github.com/ProxxiTech/qi-analyzer).
 
 ### IMPORTANT
-The Low Level Analyzer generates raw bytes from a channel of Qi protocol data, and must be paired with the [Qi High Level Analyzer](https://github.com/ProxxiTech/qi-analyzer/qi-hla) to decode the actual Qi packets.
+The [Low Level Analyzer](https://github.com/ProxxiTech/qi-analyzer) generates raw bytes from a channel of Qi protocol data, and must be paired with the [Qi High Level Analyzer](https://github.com/ProxxiTech/qi-analyzer/qi-hla) to decode the actual Qi packets.
+
+Note that the LLA must be manually installed even if the HLA was installed from the Saleae Marketplace.
 
 # Getting Started
 
@@ -31,7 +33,7 @@ The Low Level Analyzer generates raw bytes from a channel of Qi protocol data, a
 * Download the binaries for the latest version of Qi-Analyzer from the repository's [Releases](https://github.com/ProxxiTech/qi-analyzer/releases).
 * Extract the downloaded zip file to a directory.
 * In Logic 2, go to Preferences and set the Custom Low Level Analyzers directory to the directory where you extracted the downloaded zip file. See [Importing a Custom Low Level Analyzer](https://support.saleae.com/faq/technical-faq/setting-up-developer-directory) for more information. Note that additional steps may be required for MacOS users, so please follow the directions in the Saleae FAQ.
-* Install the latest version of Qi-HLA from Logic 2 > Extensions > Load Existing Extension... and select `<qi-analyzer>/qi-hla/extension.json` from the unziped download. The HLA is also published on the Saleae extension marketplace as `WPC Qi HLA`, but there's a chance that it won't match the version of the LLA you donwloaded.
+* Install the latest version of Qi-HLA from Logic 2 > Extensions > Load Existing Extension... and select `<qi-analyzer>/qi-hla/extension.json` from the unziped download. The HLA is also published on the Saleae Marketplace as `WPC Qi HLA`, but there's a chance that it won't match the version of the LLA you donwloaded.
 * Build the [circuit](#circuit) from Freescale AN4701.
 * Connect both sides of the Tx coil to the circuits inputs (leave them connected to the Qi circuit though, of course!)
 * Connect the output of the circuit to a channel on your Saleae logic analyzer.
