@@ -71,6 +71,9 @@ jobs:
     - name: zip
       run: |
         cd ${{github.workspace}}/artifacts
+        mv qi-hla qi-hla-temp
+        mv qi-hla-temp/* ./
+        rm -rf qi-hla-temp
         zip -r ${{github.workspace}}/qi-analyzer.zip .
     - uses: actions/upload-artifact@v3
       with:
