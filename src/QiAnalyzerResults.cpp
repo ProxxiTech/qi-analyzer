@@ -33,11 +33,11 @@ void QiAnalyzerResults::GenerateBubbleText(U64 frame_index, Channel& channel, Di
     char number_str[32];
     AnalyzerHelpers::GetNumberString(byte, display_base, 11, number_str, 32);
 
-    U64  packet_byte = frame.mData2;
-    char packet_byte_str[16];
-    AnalyzerHelpers::GetNumberString(packet_byte, Decimal, 8, packet_byte_str, 16);
+    // U64  packet_byte = frame.mData2;
+    // char packet_byte_str[16];
+    // AnalyzerHelpers::GetNumberString(packet_byte, Decimal, 8, packet_byte_str, 16);
 
-    AddResultString(number_str, packet_byte_str);
+    AddResultString(number_str);
 }
 
 void QiAnalyzerResults::GenerateExportFile(const char* file, DisplayBase display_base, U32 export_type_user_id) {
@@ -83,11 +83,11 @@ void QiAnalyzerResults::GenerateFrameTabularText(U64 frame_index, DisplayBase di
     char number_str[32];
     AnalyzerHelpers::GetNumberString(byte, display_base, 11, number_str, 32);
 
-    U64  packet_byte = frame.mData2;
-    char packet_byte_str[16];
-    AnalyzerHelpers::GetNumberString(packet_byte, Decimal, 8, packet_byte_str, 16);
+    // U64  packet_byte = frame.mData2;
+    // char packet_byte_str[16];
+    // AnalyzerHelpers::GetNumberString(packet_byte, Decimal, 8, packet_byte_str, 16);
 
-    AddTabularText(number_str, packet_byte_str);
+    AddTabularText(number_str);
 #endif
 }
 

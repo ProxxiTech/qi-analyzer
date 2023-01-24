@@ -1,6 +1,6 @@
 @echo off
 mkdir build
-cd build
+pushd build
 
 REM NOTE: Windows requires `--config Release` at build time, whereas MacOS and Linux use `-DCMAKE_BUILD_TYPE=Release` at configure time
 
@@ -15,3 +15,5 @@ REM Build debug (configured configuration on MacOS and Linux)
 
 REM Build release
 REM "C:\Program Files\CMake\bin\cmake.exe" --build . --config Release
+
+popd
