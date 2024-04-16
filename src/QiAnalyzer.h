@@ -24,6 +24,12 @@ class ANALYZER_EXPORT QiAnalyzer : public Analyzer2 {
     virtual bool        NeedsRerun();
 
   private:
+    struct BitInfo {
+        U64 start;
+        U64 end;
+        U32 value;
+    };
+
     std::unique_ptr<QiAnalyzerSettings> mSettings;
     std::unique_ptr<QiAnalyzerResults>  mResults;
     AnalyzerChannelData*                mQi;
@@ -33,19 +39,23 @@ class ANALYZER_EXPORT QiAnalyzer : public Analyzer2 {
 
     U32 mSampleRateHz;
 
-    U32                             mT;
-    U32                             mTError;
-    std::deque<std::pair<U64, U64>> mBitsForNextByte;    // value, location
-    std::vector<U64>                mPreambleEdges;
-    U32                             mPacketByteCount;
-    bool                            mSynchronized;
+    U32                       mTLong;
+    U32                       mTShort;
+    U32                       mTLongMinError;
+    U32                       mTLongMaxError;
+    U32                       mTShortMinError;
+    U32                       mTShortMaxError;
+    std::deque<BitInfo>       mBitsForNextByte;    // value, location
+    std::vector<U64>          mPreambleEdges;
+    U32                       mPacketByteCount;
+    bool                      mSynchronized;
 
   private:
     void Invalidate();
-	void AdvanceToNextEdge(U64 edge_location, U64* p_next_edge_location, U64* p_next_edge_distance);
+	  U64 AdvanceToNextEdge(U64 edge_location, U64* p_next_edge_location, U64* p_next_edge_distance);
     void ProcessQiData();
     void SynchronizeQiData();
-    void SaveBit(U64 location, U32 value);
+    void SaveBit(U64 location_start, U64 location_end, U32 value);
 };
 
 extern "C" ANALYZER_EXPORT const char* __cdecl GetAnalyzerName();

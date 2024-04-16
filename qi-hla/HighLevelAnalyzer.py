@@ -77,7 +77,7 @@ class Packet(Enum):
     def __str__(self):
         # return f'<{type(self).__name__}.{self.name}: ({self.a!r}, {self.b!r})>'
         header_hex = "0x{:02x}".format(self.header)
-        return f'{self.mnemonic} ({header_hex}): {self.full_name}'
+        return f'{self.mnemonic} ({header_hex}): {self.full_name} ({self.packet_type}, {self.size} {"packets" if self.size != 1 else "packet"})'
 
 
 @unique
@@ -148,13 +148,15 @@ class Hla(HighLevelAnalyzer):
         The type and data values in `frame` will depend on the input analyzer.
         '''
 
-        val = frame.data['data']
-        packet_byte = frame.data['packet_byte']
+        packet = int(frame.data['packet'])
+        payload = int.from_bytes(frame.data['payload'], 'big')
+        packet_byte = int.from_bytes(frame.data['packet_byte'], 'big')
 
-        start_bit = (val & 0b00000000001) >> 0
-        parity_bit = (val & 0b01000000000) >> 9
-        stop_bit = (val & 0b10000000000) >> 10
-        data_val = (val & 0b00111111110) >> 1
+        start_bit = (packet & 0b00000000001) >> 0
+        parity_bit = (packet & 0b01000000000) >> 9
+        stop_bit = (packet & 0b10000000000) >> 10
+        data_val = payload
+        # data_val = (packet & 0b00111111110) >> 1
 
         display_val = "0x{:02x}".format(data_val)
 
@@ -203,7 +205,7 @@ class Hla(HighLevelAnalyzer):
                 display_val = f'OK: {display_val}'
             else:
                 display_checksum = "0x{:02x}".format(checksum)
-                display_val = f'INCONSISTENT: {display_val} != {display_checksum}'
+                display_val = f'CHECKSUM ERROR: {display_val} != {display_checksum}'
 
         self.last_packet_byte = curr_packet_byte
         self.last_packet_byte_start_time = frame.start_time
